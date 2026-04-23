@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chemex Pour-Over · A Brewing Guide</title>
+<meta name="description" content="A meticulously timed Chemex pour-over recipe for 1–12 cups, with built-in timers." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4ede1;
+    --paper-warm: #ebe0cc;
+    --ink: #1a1410;
+    --espresso: #2b1810;
+    --crema: #c89d6b;
+    --amber: #b8651f;
+    --rust: #8b3a1a;
+    --sage: #6b7a5a;
+    --line: rgba(26, 20, 16, 0.12);
+    --line-strong: rgba(26, 20, 16, 0.25);
+    --shadow: 0 1px 0 rgba(26, 20, 16, 0.04), 0 8px 24px -12px rgba(43, 24, 16, 0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Manrope', system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(184, 101, 31, 0.04), transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(107, 122, 90, 0.05), transparent 50%);
+    min-height: 100vh;
+  }
+
+  /* Subtle paper grain */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.4;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    z-index: 1;
+  }
+
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Header */
+  header {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 48px;
+    margin-bottom: 56px;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .eyebrow::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+    max-width: 120px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: clamp(48px, 7vw, 84px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--espresso);
+    font-variation-settings: 'opsz' 144, 'SOFT' 50;
+    margin-bottom: 24px;
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--rust);
+  }
+
+  .lede {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--ink);
+    opacity: 0.75;
+    max-width: 540px;
+    font-weight: 300;
+  }
+
+  /* Servings panel */
+  .servings-panel {
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 28px 32px;
+    margin: 48px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .servings-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--espresso);
+    opacity: 0.6;
+  }
+
+  .servings-control {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .servings-btn {
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--line-strong);
+    background: var(--paper);
+    color: var(--espresso);
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    font-family: 'Fraunces', serif;
+    line-height: 1;
+  }
+
+  .servings-btn:hover:not(:disabled) {
+    background: var(--espresso);
+    color: var(--paper);
+    border-color: var(--espresso);
+    transform: scale(1.05);
+  }
+
+  .servings-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .servings-value {
+    font-family: 'Fraunces', serif;
+    font-size: 44px;
+    font-weight: 400;
+    color: var(--espresso);
+    min-width: 60px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .servings-unit {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--rust);
+    font-size: 18px;
+  }
+
+  /* Section heads */
+  .section {
+    margin: 64px 0;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+  }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    letter-spacing: 0.1em;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--espresso);
+    letter-spacing: -0.01em;
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  /* Ingredients */
+  .ingredient-list {
+    list-style: none;
+    display: grid;
+    gap: 0;
+  }
+
+  .ingredient {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 20px;
+    align-items: baseline;
+    padding: 18px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .ingredient:last-child { border-bottom: none; }
+
+  .ingredient-amount {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--rust);
+    font-variant-numeric: tabular-nums;
+    min-width: 80px;
+  }
+
+  .ingredient-name {
+    font-size: 16px;
+    color: var(--ink);
+  }
+
+  .ingredient-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink);
+    opacity: 0.3;
+    letter-spacing: 0.1em;
+  }
+
+  /* Steps */
+  .steps {
+    display: grid;
+    gap: 4px;
+  }
+
+  .step {
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 28px 32px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+    position: relative;
+  }
+
+  .step:hover {
+    border-color: var(--line-strong);
+  }
+
+  .step-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+
+  .step-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--espresso);
+    letter-spacing: -0.01em;
+    flex: 1;
+  }
+
+  .step-content {
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: var(--ink);
+    opacity: 0.85;
+  }
+
+  .step-content .inline-amount {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--rust);
+    background: rgba(184, 101, 31, 0.08);
+    padding: 2px 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  /* Timer */
+  .timer {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .timer-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--espresso);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    min-width: 90px;
+  }
+
+  .timer-display.running {
+    color: var(--rust);
+  }
+
+  .timer-display.done {
+    color: var(--sage);
+  }
+
+  .timer-controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  .timer-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 8px 16px;
+    border: 1px solid var(--line-strong);
+    background: var(--paper);
+    color: var(--espresso);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+    font-weight: 500;
+  }
+
+  .timer-btn:hover {
+    background: var(--espresso);
+    color: var(--paper);
+    border-color: var(--espresso);
+  }
+
+  .timer-btn.primary {
+    background: var(--espresso);
+    color: var(--paper);
+    border-color: var(--espresso);
+  }
+
+  .timer-btn.primary:hover {
+    background: var(--rust);
+    border-color: var(--rust);
+  }
+
+  .timer-target {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink);
+    opacity: 0.45;
+    letter-spacing: 0.05em;
+    margin-left: auto;
+  }
+
+  /* Notes */
+  .notes {
+    background: var(--paper-warm);
+    border-left: 3px solid var(--amber);
+    padding: 32px 36px;
+    margin-top: 48px;
+    border-radius: 2px;
+  }
+
+  .notes h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--espresso);
+    margin-bottom: 16px;
+    margin-top: 24px;
+    font-style: italic;
+  }
+
+  .notes h3:first-child { margin-top: 0; }
+
+  .notes ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .notes li {
+    padding: 6px 0 6px 20px;
+    position: relative;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .notes li::before {
+    content: '◦';
+    position: absolute;
+    left: 0;
+    color: var(--amber);
+    font-size: 18px;
+    line-height: 1.4;
+  }
+
+  .notes p {
+    margin-bottom: 12px;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .notes strong {
+    color: var(--espresso);
+    font-weight: 600;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink);
+    opacity: 0.4;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .container { padding: 40px 20px 64px; }
+    .servings-panel { padding: 20px 24px; }
+    .step { padding: 22px 24px; }
+    .notes { padding: 24px 24px 24px 28px; }
+    .ingredient { grid-template-columns: auto 1fr; }
+    .ingredient-id { display: none; }
+    .timer { gap: 10px; }
+    .timer-target { margin-left: 0; width: 100%; }
+  }
+
+  /* Animation */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .timer-display.running::before {
+    content: '●';
+    color: var(--rust);
+    margin-right: 8px;
+    animation: pulse 1.4s ease-in-out infinite;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="eyebrow">Brewing Guide № 01</div>
+    <h1>Chemex<br>Pour-Over <em>for four</em></h1>
+    <p class="lede">A classic Chemex pour-over: bright, clean, and full-bodied. Target brew time four to four-thirty. Adjust servings below — everything scales.</p>
+  </header>
+
+  <div class="servings-panel">
+    <div>
+      <div class="servings-label">Brewing for</div>
+    </div>
+    <div class="servings-control">
+      <button class="servings-btn" id="decrease" aria-label="Decrease servings">−</button>
+      <div>
+        <span class="servings-value" id="servings">4</span>
+        <span class="servings-unit">cups</span>
+      </div>
+      <button class="servings-btn" id="increase" aria-label="Increase servings">+</button>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">I</span>
+      <h2 class="section-title">Ingredients</h2>
+    </div>
+    <ul class="ingredient-list" id="ingredients"></ul>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">II</span>
+      <h2 class="section-title">Method</h2>
+    </div>
+    <div class="steps" id="steps"></div>
+  </section>
+
+  <div class="notes">
+    <h3>Dialing it in</h3>
+    <ul>
+      <li>Brew too sour or weak? Grind finer, pour slower, or bump coffee up.</li>
+      <li>Brew too bitter or harsh? Grind coarser, pour faster, or drop the dose.</li>
+      <li>Total brew time is the north star — 4:00 to 4:30 for this dose.</li>
+    </ul>
+
+    <h3>Tips for a noticeably better cup</h3>
+    <ul>
+      <li>Weigh everything. Volume measurements drift; weight doesn't.</li>
+      <li>Use freshly ground coffee — ideally within 2 weeks of roast date, ground just before brewing.</li>
+      <li>Filtered water matters more than people think. Skip distilled; use spring or filtered tap.</li>
+      <li>The Chemex spout wants to pour clean and slow — a gooseneck kettle helps, but you can manage with a regular kettle by tilting carefully.</li>
+    </ul>
+
+    <p style="margin-top: 20px;">The <strong>1:16 ratio</strong> (coffee to water) is a solid starting point. Once you nail this, try 1:15 for a stronger cup or 1:17 for a lighter, tea-like brew.</p>
+  </div>
+
+  <footer>
+    Brew slow · Drink well
+  </footer>
+
+</div>
+
+<script>
+  // Recipe data
+  const BASE_SERVINGS = 4;
+  let currentServings = 4;
+
+  const ingredients = [
+    { id: '0001', amount: 45, unit: 'g', name: 'freshly roasted coffee beans, ground medium-coarse (like kosher salt)' },
+    { id: '0002', amount: 720, unit: 'g', name: 'filtered water, heated to 96°C / 205°F' },
+    { id: '0003', amount: 1, unit: '', name: 'Chemex bonded filter paper' }
+  ];
+
+  const steps = [
+    {
+      title: 'Heat the water',
+      content: 'Bring {0002} to a boil, then let it rest for ~30 seconds to settle at ~96°C / 205°F. If you don\'t have a thermometer, boil and wait 30s — that\'s close enough.',
+      timer: 30
+    },
+    {
+      title: 'Prep the filter',
+      content: 'Unfold {0003} into a cone and place in the Chemex with the 3-layer (thick) side against the spout. This is critical — it keeps the filter from collapsing into the pour channel.'
+    },
+    {
+      title: 'Rinse the filter',
+      content: 'Pour hot water through the filter to saturate it completely. This removes papery taste and preheats the Chemex. Discard the rinse water by holding the filter in place and tipping the Chemex out.'
+    },
+    {
+      title: 'Grind and add the coffee',
+      content: 'Grind {0001} to medium-coarse — texture should feel like kosher salt, not table salt. Add grounds to the wet filter, give the Chemex a gentle shake to level the bed, then place it on the scale and tare to zero.'
+    },
+    {
+      title: 'Bloom',
+      content: 'Start your timer. Pour 90g of water (roughly 2× the coffee weight) in a slow spiral, saturating all the grounds. You\'ll see the bed puff and release CO₂ — that\'s the bloom. Let it sit for 45 seconds.',
+      timer: 45
+    },
+    {
+      title: 'First main pour',
+      content: 'Starting at the center, pour in slow concentric spirals outward (avoid the filter edges) until the scale reads half the total water. Aim to finish this pour around the 1:30 mark. Let it drain until the slurry is about halfway down before the next pour.',
+      timer: 45
+    },
+    {
+      title: 'Second main pour',
+      content: 'Continue pouring in the same spiral pattern until the scale reads the full water weight. Finish this pour by around 2:45. Keep the water level steady — don\'t let the bed go dry between pours.',
+      timer: 60
+    },
+    {
+      title: 'Let it drain',
+      content: 'Allow the brew to finish dripping. Total brew time from start of bloom should land between 4:00 and 4:30. If it\'s much faster, grind finer next time; much slower, grind coarser.',
+      timer: 90
+    },
+    {
+      title: 'Swirl and serve',
+      content: 'Lift the filter out, give the Chemex a gentle swirl to mix the brew evenly, and pour into cups (~150ml each). Best enjoyed within 20 minutes.'
+    }
+  ];
+
+  // Format amount with reasonable precision
+  function formatAmount(amount) {
+    if (amount >= 100) return Math.round(amount).toString();
+    if (amount >= 10) return (Math.round(amount * 2) / 2).toString();
+    return (Math.round(amount * 10) / 10).toString();
+  }
+
+  // Format seconds as MM:SS
+  function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
+  // Render ingredients with current scaling
+  function renderIngredients() {
+    const scale = currentServings / BASE_SERVINGS;
+    const list = document.getElementById('ingredients');
+    list.innerHTML = ingredients.map(ing => {
+      const scaledAmount = ing.amount * scale;
+      const display = ing.unit
+        ? `${formatAmount(scaledAmount)} ${ing.unit}`
+        : Math.max(1, Math.round(scaledAmount)).toString();
+      return `
+        <li class="ingredient">
+          <span class="ingredient-amount">${display}</span>
+          <span class="ingredient-name">${ing.name}</span>
+          <span class="ingredient-id">№ ${ing.id}</span>
+        </li>
+      `;
+    }).join('');
+  }
+
+  // Replace {0001} style refs in step content with scaled amounts
+  function renderStepContent(content) {
+    const scale = currentServings / BASE_SERVINGS;
+    return content.replace(/\{(\d{4})\}/g, (match, id) => {
+      const ing = ingredients.find(i => i.id === id);
+      if (!ing) return match;
+      const scaled = ing.amount * scale;
+      const display = ing.unit
+        ? `${formatAmount(scaled)} ${ing.unit}`
+        : `${Math.max(1, Math.round(scaled))}`;
+      return `<span class="inline-amount">${display} ${ing.name.split(',')[0]}</span>`;
+    });
+  }
+
+  // Timer state per step
+  const timerState = {};
+
+  function renderSteps() {
+    const container = document.getElementById('steps');
+    container.innerHTML = steps.map((step, i) => {
+      const num = String(i + 1).padStart(2, '0');
+      const stepId = `step-${i}`;
+      let timerHtml = '';
+      if (step.timer) {
+        timerHtml = `
+          <div class="timer">
+            <div class="timer-display" id="display-${i}">${formatTime(step.timer)}</div>
+            <div class="timer-controls">
+              <button class="timer-btn primary" id="start-${i}" data-step="${i}" data-action="start">Start</button>
+              <button class="timer-btn" id="reset-${i}" data-step="${i}" data-action="reset">Reset</button>
+            </div>
+            <div class="timer-target">Target ${formatTime(step.timer)}</div>
+          </div>
+        `;
+      }
+      return `
+        <div class="step" id="${stepId}">
+          <div class="step-header">
+            <span class="step-num">${num}</span>
+            <h3 class="step-title">${step.title}</h3>
+          </div>
+          <div class="step-content">${renderStepContent(step.content)}</div>
+          ${timerHtml}
+        </div>
+      `;
+    }).join('');
+
+    // Wire up timer buttons
+    container.querySelectorAll('.timer-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.step, 10);
+        const action = btn.dataset.action;
+        if (action === 'start') toggleTimer(i);
+        if (action === 'reset') resetTimer(i);
+      });
+    });
+  }
+
+  function toggleTimer(i) {
+    const state = timerState[i] || { remaining: steps[i].timer, running: false, intervalId: null };
+    const display = document.getElementById(`display-${i}`);
+    const startBtn = document.getElementById(`start-${i}`);
+
+    if (state.running) {
+      // Pause
+      clearInterval(state.intervalId);
+      state.running = false;
+      startBtn.textContent = 'Resume';
+      display.classList.remove('running');
+    } else {
+      // Start / Resume
+      if (state.remaining <= 0) state.remaining = steps[i].timer;
+      state.running = true;
+      startBtn.textContent = 'Pause';
+      display.classList.add('running');
+      display.classList.remove('done');
+      state.intervalId = setInterval(() => {
+        state.remaining -= 1;
+        display.textContent = formatTime(Math.max(0, state.remaining));
+        if (state.remaining <= 0) {
+          clearInterval(state.intervalId);
+          state.running = false;
+          display.classList.remove('running');
+          display.classList.add('done');
+          startBtn.textContent = 'Restart';
+          // Audio cue
+          try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 880;
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.05);
+            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.6);
+          } catch (e) { /* audio not available */ }
+        }
+      }, 1000);
+    }
+    timerState[i] = state;
+  }
+
+  function resetTimer(i) {
+    const state = timerState[i];
+    if (state) {
+      clearInterval(state.intervalId);
+      state.running = false;
+      state.remaining = steps[i].timer;
+    }
+    const display = document.getElementById(`display-${i}`);
+    const startBtn = document.getElementById(`start-${i}`);
+    display.textContent = formatTime(steps[i].timer);
+    display.classList.remove('running', 'done');
+    if (startBtn) startBtn.textContent = 'Start';
+    timerState[i] = { remaining: steps[i].timer, running: false, intervalId: null };
+  }
+
+  // Servings controls
+  const decreaseBtn = document.getElementById('decrease');
+  const increaseBtn = document.getElementById('increase');
+  const servingsDisplay = document.getElementById('servings');
+
+  function updateServings(delta) {
+    const next = currentServings + delta;
+    if (next < 1 || next > 12) return;
+    currentServings = next;
+    servingsDisplay.textContent = currentServings;
+    decreaseBtn.disabled = currentServings <= 1;
+    increaseBtn.disabled = currentServings >= 12;
+    renderIngredients();
+    renderSteps();
+  }
+
+  decreaseBtn.addEventListener('click', () => updateServings(-1));
+  increaseBtn.addEventListener('click', () => updateServings(1));
+
+  // Initial render
+  renderIngredients();
+  renderSteps();
+</script>
+</body>
+</html>
